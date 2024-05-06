@@ -64,7 +64,7 @@ using namespace CEC;
 //       command.ack
 //       command.eom
 //       command.opcode (enum)
-//       command.parameters 
+//       command.parameters
 //       command.opcode_set (flag for when opcode is set; should probably use
 //          this to set opcode to None)
 //       command.transmit_timeout
@@ -155,7 +155,7 @@ std::list<CEC_ADAPTER_TYPE> get_adapters() {
    int count = CEC_adapter->CEC_FIND_ADAPTERS(dev_list, cec_count);
    if( count > cec_count ) {
       cec_count = count;
-      dev_list = (CEC_ADAPTER_TYPE*)realloc(dev_list, 
+      dev_list = (CEC_ADAPTER_TYPE*)realloc(dev_list,
          cec_count * sizeof(CEC_ADAPTER_TYPE));
       count = CEC_adapter->CEC_FIND_ADAPTERS(dev_list, cec_count);
       count = (std::min)(count, cec_count);
@@ -184,8 +184,8 @@ static PyObject * list_adapters(PyObject * self, PyObject * args) {
       for( itr = dev_list.begin(); itr != dev_list.end(); itr++ ) {
 #if HAVE_CEC_ADAPTER_DESCRIPTOR
          PyList_Append(result, Py_BuildValue("s", itr->strComName));
-         /* Convert all of the fields 
-         PyList_Append(result, Py_BuildValue("sshhhhii", 
+         /* Convert all of the fields
+         PyList_Append(result, Py_BuildValue("sshhhhii",
                   itr->strComName,
                   itr->strComPath,
                   itr->iVendorId,
@@ -198,8 +198,8 @@ static PyObject * list_adapters(PyObject * self, PyObject * args) {
                   */
 #else
          PyList_Append(result, Py_BuildValue("s", itr->comm));
-         /* Convert all of the fields 
-         PyList_Append(result, Py_BuildValue("sshhhhii", 
+         /* Convert all of the fields
+         PyList_Append(result, Py_BuildValue("sshhhhii",
                   itr->comm,
                   itr->strComPath,
                   itr->iVendorId,
@@ -287,7 +287,7 @@ static PyObject * list_devices(PyObject * self, PyObject * args) {
             PyObject * dev = PyObject_CallObject(Device, ii);
             Py_DECREF(ii);
             if( dev ) {
-               //PyList_Append(result, dev); 
+               //PyList_Append(result, dev);
                PyDict_SetItem(result, Py_BuildValue("b", i), dev);
             } else {
                Py_DECREF(result);
@@ -347,7 +347,7 @@ static PyObject * remove_callback(PyObject * self, PyObject * args) {
   Py_ssize_t events = EVENT_ALL; // default to all events
 
   if( PyArg_ParseTuple(args, "O|i:remove_callback", &callback, &events) ) {
-     for( cb_list::iterator itr = callbacks.begin(); 
+     for( cb_list::iterator itr = callbacks.begin();
            itr != callbacks.end();
            ++itr ) {
         if( itr->cb == callback ) {
@@ -360,7 +360,7 @@ static PyObject * remove_callback(PyObject * self, PyObject * args) {
            }
         }
      }
-     
+
   }
   Py_INCREF(Py_None);
   return Py_None;
@@ -696,7 +696,7 @@ static PyMethodDef CecMethods[] = {
 };
 
 libcec_configuration * CEC_config;
-ICECCallbacks * CEC_callbacks; 
+ICECCallbacks * CEC_callbacks;
 
 #if CEC_LIB_VERSION_MAJOR >= 4
 void log_cb(void * self, const cec_log_message* message) {
@@ -815,8 +815,8 @@ int config_cb(void * self, const libcec_configuration) {
    PyGILState_STATE gstate;
    gstate = PyGILState_Ensure();
    // TODO: figure out how to pass these as parameters
-   // yeah... right. 
-   //  we'll probably have to come up with some functions for converting the 
+   // yeah... right.
+   //  we'll probably have to come up with some functions for converting the
    //  libcec_configuration class into a python Object
    //  this will probably be _lots_ of work and should probably wait until
    //  a later release, or when it becomes necessary.
@@ -924,7 +924,18 @@ PyMODINIT_FUNC initcec(void) {
    CEC_config = new libcec_configuration();
    CEC_config->Clear();
 
-   snprintf(CEC_config->strDeviceName, 13, "python-cec");
+   debug("Checking for CEC_OSD_NAME environment variable...\n");
+   const char * env_p = std::getenv("CEC_OSD_NAME");
+   const char * device_name = "python-cec";
+   if( env_p == NULL ) {
+      debug("CEC_OSD_NAME is not set. Will set device name to %s\n", device_name);
+   } else {
+      debug("Found CEC_OSD_NAME = %s\n",env_p);
+      device_name = env_p;
+   }
+
+   strncpy(CEC_config->strDeviceName, device_name, LIBCEC_OSD_NAME_SIZE - 1);
+
    // CEC_CLIENT_VERSION_CURRENT was introduced in 2.0.4
    // just use 2.1.0 because the conditional is simpler
 #if CEC_LIB_VERSION_MAJOR >= 3
