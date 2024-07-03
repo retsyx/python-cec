@@ -10,7 +10,7 @@ if "CFLAGS" in cfg_vars:
 if "OPT" in cfg_vars:
     cfg_vars["OPT"] = cfg_vars["OPT"].replace("-Wstrict-prototypes", "")
 
-python_cec = Extension('cec', sources = [ 'cec.cpp', 'device.cpp' ], 
+python_cec = Extension('cec', sources = [ 'cec.cpp', 'device.cpp', 'adapter.cpp' ],
                         include_dirs=['include'],
                         libraries = [ 'cec' ])
 

@@ -47,7 +47,8 @@ import cec
 
 cec.init()
 
-tv = cec.Device(cec.CECDEVICE_TV)
+adapter = cec.Adapter()
+tv = cec.Device(adapter, cec.CECDEVICE_TV)
 tv.power_on()
 ```
 
@@ -57,14 +58,16 @@ tv.power_on()
 ```python
 import cec
 
-adapters = cec.list_adapters() # may be called before init()
+adapter_devs = cec.list_adapters() # may be called before init()
 
-cec.init() # use default adapter
-cec.init(adapter) # use a specific adapter
+adapter = cec.Adapter() # use default adapter
+# create an adapter using the specifed device, with the OSD name 'RPi TV' and play back device type
+adapter = cec.Adapter(dev=adapter_dev, name='RPi TV', type=cec.CECDEVICE_PLAYBACKDEVICE1)
 
-cec.close()  # close the current adapter
+adapter.close() # close the adapter
 
-cec.add_callback(handler, events)
+adapter.add_callback(handler, events)
+
 # the list of events is specified as a bitmask of the possible events:
 cec.EVENT_LOG
 cec.EVENT_KEYPRESS
@@ -78,9 +81,9 @@ cec.EVENT_ALL
 # specific to the event. Contact me if you're interested in using specific
 # callbacks
 
-cec.remove_callback(handler, events)
+adapter.remove_callback(handler, events)
 
-devices = cec.list_devices()
+devices = adapter.list_devices()
 
 class Device:
    __init__(id)
@@ -98,35 +101,27 @@ class Device:
    set_audio_input(input)
    transmit(opcode, parameters)
 
-cec.is_active_source(addr)
-cec.set_active_source() # use default device type
-cec.set_active_source(device_type) # use a specific device type
-cec.set_inactive_source()  # not implemented yet
+adapter.is_active_source(addr)
+adapter.set_active_source() # use default device type
+adapter.set_active_source(device_type) # use a specific device type
+adapter.set_inactive_source()  # not implemented yet
 
-cec.volume_up()
-cec.volume_down()
-cec.toggle_mute()
+adapter.volume_up()
+adapter.volume_down()
+adapter.toggle_mute()
 # TODO: audio status
 
-cec.set_physical_address(addr)
-cec.can_persist_config()
-cec.persist_config()
-cec.set_port(device, port)
+adapter.set_physical_address(addr)
+adapter.can_persist_config()
+adapter.persist_config()
+adapter.set_port(device, port)
 
 # set arbitrary active source (in this case 2.0.0.0)
 destination = cec.CECDEVICE_BROADCAST
 opcode = cec.CEC_OPCODE_ACTIVE_SOURCE
 parameters = b'\x20\x00'
-cec.transmit(destination, opcode, parameters)
+adapter.transmit(destination, opcode, parameters)
 ```
-
-
-## Environment Variables
-
-CEC_OSD_NAME - by default this library will set the device name to "python-cec". If you set this
-environment varible (to a string <= 12 characters in length) your device will assigned that name
-when the module initialises itself. This name will appear on your television when you scan for CEC devices.
-
 
 ## Changelog
 

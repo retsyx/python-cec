@@ -18,7 +18,7 @@ all: $(EXTENSION)
 $(EXTENSION): $(BUILD_DIR)/$(EXTENSION)
 	cp $< $@
 
-$(BUILD_DIR)/$(EXTENSION): cec.cpp setup.py device.h device.cpp
+$(BUILD_DIR)/$(EXTENSION): cec.cpp setup.py device.h device.cpp adapter.h adapter.cpp
 	$(PYTHON) setup.py build
 
 test: all

@@ -1,6 +1,6 @@
-/* device.h
+/* adapter.h
  *
- * Copyright (C) 2013 Austin Hendrix <namniart@gmail.com>
+ * Copyright (C) 2024 retsyx <retsyx@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,35 +17,44 @@
  */
 
 /*
- * CEC device interface for Python
+ * CEC adapter interface for Python
  *
- * Author: Austin Hendrix <namniart@gmail.com>
+ * Author: retsyx <retsyx@gmail.com>
  */
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+#include <list>
+
 #include <libcec/cec.h>
 
-struct Adapter;
+struct Callback {
+   public:
+      long int event;
+      PyObject * cb;
 
-struct Device {
-    PyObject_HEAD
-
-    Adapter * adapter;
-
-    CEC::cec_logical_address   addr;
-
-    PyObject * vendorId;
-    PyObject * physicalAddress;
-    PyObject * cecVersion;
-    PyObject * osdName;
-    PyObject * lang;
+      Callback(long int e, PyObject * c) : event(e), cb(c) {}
 };
 
+typedef std::list<Callback> cb_list;
 
-PyTypeObject * DeviceTypeInit();
-PyTypeObject * DeviceType();
+struct Adapter {
+    PyObject_HEAD
+    char dev[1024];
+    CEC::libcec_configuration config;
+    CEC::ICECCallbacks cec_callbacks;
+    CEC::ICECAdapter * adapter;
+    cb_list callbacks;
+
+    Adapter() : adapter(NULL) {}
+    ~Adapter() {}
+};
+
+PyTypeObject * AdapterTypeInit();
+PyTypeObject * AdapterType();
+
+std::list<CEC::CEC_ADAPTER_TYPE> get_adapters(CEC::ICECAdapter * adapter);
 
 /*
  * Compat for libcec 3.x
