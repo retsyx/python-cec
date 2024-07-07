@@ -125,6 +125,9 @@ adapter.transmit(destination, opcode, parameters)
 
 ## Changelog
 
+### 0.3 (2024-07-07)
+* Add Adapter class instead of global CEC context
+
 ### 0.2.8 ( 2022-01-05 )
 * Add support for libCEC >= 5
 * Windows support

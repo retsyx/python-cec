@@ -14,16 +14,15 @@ python_cec = Extension('cec', sources = [ 'cec.cpp', 'device.cpp', 'adapter.cpp'
                         include_dirs=['include'],
                         libraries = [ 'cec' ])
 
-setup(name='cec', version='0.2.8',
+setup(name='cec', version='0.3.0',
       description="Python bindings for libcec",
       long_description=open("README.md", "r", encoding="utf-8").read(),
       long_description_content_type="text/markdown",
       license='GPLv2',
-      url="https://github.com/trainman419/python-cec",
+      url="https://github.com/retsyx/python-cec",
       project_urls={
-          "Bug Tracker": "https://github.com/trainman419/python-cec/issues",
+          "Bug Tracker": "https://github.com/retsyx/python-cec/issues",
       },
-      author="Austin Hendrix",
-      author_email="namniart@gmail.com",
+      author="retsyx",
       data_files=['COPYING'],
       ext_modules=[python_cec])
